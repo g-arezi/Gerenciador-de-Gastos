@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}Meus Gastos - Gerenciador de Gastos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-list text-primary me-2"></i>
+                    Meus Gastos
+                </h1>
+                <a href="/expenses/new" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Novo Gasto
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if expenses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th class="text-end">Valor</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in expenses %}
+                                <tr>
+                                    <td>{{ expense.date|date("d/m/Y") }}</td>
+                                    <td>{{ expense.description }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ expense.category }}</span>
+                                    </td>
+                                    <td class="text-end expense-amount">R$ {{ "%.2f"|format(expense.amount) }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/expenses/{{ expense.id }}/edit" class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="POST" action="/expenses/{{ expense.id }}/delete" class="d-inline" 
+                                                  onsubmit="return confirm('Tem certeza que deseja excluir este gasto?')">
+                                                <button type="submit" class="btn btn-outline-danger" title="Excluir">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Total de {{ expenses|length }} gasto(s) encontrado(s)
+                                </p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                {% set total = 0 %}
+                                {% for expense in expenses %}
+                                    {% set total = total + expense.amount %}
+                                {% endfor %}
+                                <p class="fw-bold text-danger mb-0">
+                                    Total: R$ {{ "%.2f"|format(total) }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-muted mb-4"></i>
+                        <h4 class="text-muted">Nenhum gasto encontrado</h4>
+                        <p class="text-muted mb-4">Comece adicionando seu primeiro gasto para controlar suas finanças.</p>
+                        <a href="/expenses/new" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>Adicionar Primeiro Gasto
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
